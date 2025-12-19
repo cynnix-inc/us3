@@ -1,0 +1,60 @@
+{
+  "tasks": {
+    "rule_compliance_audit": {
+      "last_completed": "2025-01-15",
+      "interval_days": 30,
+      "description": "Review rules vs current Sudoku scope and docs. Ensure .cursor/rules/*.mdc matches docs/sudoku-*.md and the repo’s actual tech stack.",
+      "checklist_location": "docs/sudoku-master-stack-v1.md"
+    },
+    "dependency_updates_review": {
+      "last_completed": null,
+      "interval_days": 14,
+      "description": "Review and update dependencies (Expo, React Native, Supabase, testing toolchain)"
+    },
+    "code_quality_review": {
+      "last_completed": null,
+      "interval_days": 30,
+      "description": "Review code quality metrics and improvements (lint, types, test stability)"
+    },
+    "security_audit": {
+      "last_completed": null,
+      "interval_days": 90,
+      "description": "Security audit and vulnerability check (npm audit, Supabase policies review)"
+    },
+    "performance_review": {
+      "last_completed": null,
+      "interval_days": 60,
+      "description": "Performance review and optimization check (grid input latency, generation time, startup)"
+    },
+    "documentation_updates": {
+      "last_completed": null,
+      "interval_days": 30,
+      "description": "Update project documentation"
+    },
+    "schema_documentation_sync": {
+      "last_completed": null,
+      "interval_days": 14,
+      "description": "Sync schema documentation with migrations (SQLite + Supabase). Ensure new tables/columns are documented with intent and constraints."
+    },
+    "supabase_migrations_review": {
+      "last_completed": null,
+      "interval_days": 14,
+      "description": "Review Supabase schema/migrations and RLS policies for correctness and security"
+    },
+    "e2e_flake_review": {
+      "last_completed": null,
+      "interval_days": 30,
+      "description": "Review E2E flakiness and stabilize Playwright/Maestro tests"
+    },
+    "eas_build_profiles_review": {
+      "last_completed": null,
+      "interval_days": 30,
+      "description": "Review EAS build profiles and environment variable usage to ensure secrets are not embedded into the client bundle."
+    },
+    "privacy_controls_review": {
+      "last_completed": null,
+      "interval_days": 60,
+      "description": "Review privacy controls (analytics opt-out, export/delete account, clear local data) against PRD and ensure implementations remain compliant."
+    }
+  }
+}

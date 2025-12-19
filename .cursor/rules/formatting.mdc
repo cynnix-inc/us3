@@ -1,0 +1,63 @@
+---
+description: Code formatting standards for Expo/TypeScript (Prettier + ESLint) and NativeWind class ordering
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Formatting Rules
+
+## JavaScript/TypeScript Formatting (Prettier)
+
+- **Tool**: Prettier
+- **Config file**: `.prettierrc.json`
+- **Ignore file**: `.prettierignore`
+- **Tailwind/NativeWind plugin**: Enabled (for class ordering in `className` strings)
+- **Run on save**: Yes
+- **Run in CI**: Required
+- **Local Command**: `npx prettier --write .`
+
+Use Prettier for JS/TS formatting.
+
+## Tailwind Class Ordering
+
+- **Plugin**: `@tailwindcss/prettier-plugin`
+- **Order**: layout, spacing, sizing, typography, colors, effects, transitions
+- Group related utilities together
+
+Use Tailwind/NativeWind Prettier plugin for consistent `className` ordering.
+
+## Linting (ESLint)
+
+- **Tool**: ESLint
+- **Run in CI**: Required
+- **Goal**: Catch unsafe patterns (unused vars, unsafe `any`, missing deps, etc.)
+- **Rule of thumb**: Prefer fixing lint errors rather than disabling rules. If a rule must be disabled, document why in-code.
+
+## EditorConfig
+
+- **File required**: Yes
+- **Charset**: UTF-8
+- **Line endings**: LF
+- **Indent style**: Space
+- **Indent sizes**:
+  - Default: 2 spaces
+  - JS/TS/TSX: 2 spaces
+  - YAML/YML: 2 spaces
+  - JSON: 2 spaces
+- **Insert final newline**: Yes
+- **Trim trailing whitespace**: Yes
+
+Maintain `.editorconfig` for cross-editor consistency.
+
+## File Line Endings
+
+- **Unix/Windows**: LF (enforced via `.gitattributes`)
+- **Exception**: Batch files use CRLF
+
+Enforce LF line endings on all platforms via `.gitattributes`:
+- JS/TS: LF
+- YAML: LF
+- Batch: CRLF
+
+Formatting rules apply always. Format on save for development; enforce in CI/CD pipelines.

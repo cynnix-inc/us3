@@ -1,0 +1,90 @@
+---
+description: Dependency version pinning for environment parity
+globs:
+  - "**/package.json"
+  - "**/package-lock.json"
+  - "**/pnpm-lock.yaml"
+  - "**/yarn.lock"
+  - "**/eas.json"
+  - "**/app.json"
+  - "**/app.config.*"
+  - "**/supabase/config.toml"
+  - "**/.github/workflows/**"
+  - "**/.nvmrc"
+  - "**/.node-version"
+alwaysApply: true
+---
+
+# Versioning Rules
+
+## Required Versions
+
+### Node.js
+- **Version**: 20.x LTS
+- **Required files**: `.nvmrc` must exist and specify `20` (or specific minor like `20.11.0`)
+- **Validation**: Specify in `.nvmrc` and `package.json` engines field
+- **CI**: Validate Node version matches `.nvmrc` in CI pipelines
+
+### TypeScript
+- **Version**: ^5.x (pinned minor)
+- **Strictness**: `tsconfig.json` strict mode must remain enabled
+
+### Expo / React Native
+- **Expo SDK**: pin the Expo SDK minor line (e.g., `~52.0.0` style). Upgrade intentionally.
+- **React / React Native**: must be the versions required by the pinned Expo SDK.
+  - Do **not** bump React Native independently.
+  - Prefer `npx expo install` (or `expo install`) to keep compatibility.
+
+### NativeWind
+- **NativeWind**: pinned minor version
+- **Tailwind (for NativeWind)**: pinned minor version (if used)
+
+### Testing Frameworks
+- **Unit tests**: choose one primary runner and pin it (Jest or Vitest)
+- **Web E2E**: Playwright ^1.x (preferred)
+- **Mobile E2E**: choose one and pin it (Maestro recommended for simplicity, or Detox if needed)
+
+### Supabase
+- **Supabase JS client**: pinned minor (`@supabase/supabase-js`)
+- **Supabase CLI**: pinned minor (if used in CI/local tooling)
+
+## Version Pinning Strategy
+
+- **npm**: Use caret for minor versions unless a tool requires tilde pinning (e.g., Expo SDK often prefers `~`)
+- **GitHub Actions**: Pin action versions (not commit SHAs)
+
+## Validation
+
+- Check versions in CI
+- Fail build on version mismatches
+- Report outdated dependencies
+
+## Application Release Versioning (SemVer)
+
+Use Semantic Versioning (SemVer) for application releases: `MAJOR.MINOR.PATCH`
+
+### Version Format
+
+- **Format**: `v1.2.3` (e.g., `v1.0.0`, `v2.1.5`)
+- **MAJOR**: Breaking/incompatible changes
+- **MINOR**: New features, backward compatible
+- **PATCH**: Bug fixes, backward compatible
+
+### Git Tagging
+
+- **Tag format**: `v1.2.3` (always prefixed with `v`)
+- **Pre-release suffixes**: `-alpha.1`, `-beta.1`, `-rc.1` (e.g., `v2.0.0-beta.1`)
+- **When to bump**:
+  - PATCH: Bug fixes, patches
+  - MINOR: New features, enhancements (backward compatible)
+  - MAJOR: Breaking changes, major refactors
+
+### Examples
+
+- `v1.0.0` - Initial release
+- `v1.0.1` - Bug fix release
+- `v1.1.0` - New feature release
+- `v2.0.0` - Major breaking change
+- `v2.0.0-beta.1` - Pre-release beta
+
+Version rules apply always. Pin minor versions for environment parity. Validate in CI/CD pipelines.

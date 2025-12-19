@@ -1,0 +1,54 @@
+---
+description: Simple architecture principles for Sudoku (Expo + TypeScript + Supabase)
+globs:
+  - "app/**"
+  - "src/**"
+  - "supabase/**"
+alwaysApply: true
+---
+
+# Architecture Principles (Simple)
+
+Keep the architecture straightforward and maintainable with clear boundaries and minimal layers.
+
+All **business logic** (Sudoku rules, eligibility, autosave policy) lives outside UI components.
+
+## Layers and Responsibilities
+
+- UI: screens/components and accessibility; no persistence or network calls in render paths
+- Domain/Engine: Sudoku generation/solver/difficulty rating; pure TypeScript; no UI dependencies
+- Application services: orchestration (start run, apply move, compute eligibility, autosave policy)
+- Storage: SQLite + key/value preferences; serialization; no UI dependencies
+- Sync/Backend: Supabase auth/sync/leaderboard submission validation (Edge Functions)
+
+## Dependency Direction
+
+- UI → application services → domain/engine + storage + sync
+- Depend on interfaces/modules for external providers (Supabase client, clock/timer, storage adapters).
+- Avoid circular dependencies; prefer explicit dependency injection or parameter passing.
+
+## Simplicity & Refactoring
+
+- Start simple; avoid premature abstraction
+- Refactor when real needs emerge (reuse, complexity, testing)
+
+## When to Create a New Layer or Extract Logic
+
+- Extract to an application service when screen logic grows or is reused.
+- Extract to a storage adapter when persistence concerns grow or need testing in isolation.
+- Extract to a pure helper when logic is reusable and can be unit tested.
+
+## Code Organization
+
+- Group by domain/feature where practical (e.g., `engine`, `storage`, `sync`, `ui`)
+- Co-locate DTOs, services, and tests near the domain they belong to
+- Keep files small and focused; prefer many small units over large god-classes
+
+## Testing
+
+- Unit test domain/engine and eligibility rules (pure, deterministic)
+- Unit test application services by mocking storage/sync providers
+- Contract test Edge Functions request/response shapes and validation logic
+
+Keep it simple: thin UI, cohesive services, focused storage/sync boundaries.
+

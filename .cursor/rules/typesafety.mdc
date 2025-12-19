@@ -1,0 +1,69 @@
+---
+description: Type safety enforcement for TypeScript (Expo + RN Web + Supabase)
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.mts"
+  - "**/*.cts"
+  - "app/**"
+  - "src/**"
+  - "supabase/**"
+  - "tests/**"
+alwaysApply: true
+---
+
+# Type Safety Rules
+
+## TypeScript Strictness
+
+Enable all strict mode flags:
+- `strict`: true
+- `noImplicitAny`: true
+- `strictNullChecks`: true
+- `exactOptionalPropertyTypes`: true
+- Prefer enabling:
+  - `noUncheckedIndexedAccess`: true
+  - `noPropertyAccessFromIndexSignature`: true
+
+**Pre-PR Requirement**:
+- Keep `tsconfig.json` strict flags enabled.
+- Run `npm run lint` and `npm test` (or `npm run test:coverage`) locally to catch type/test issues early.
+
+Require explicit types; avoid `any` type except for escape hatches with justification.
+
+Nullable vs optional:
+- Optional property: `foo?: string` (may be missing)
+- Nullable property: `foo: string | null` (present but may be null)
+
+## DTO Type Safety
+
+- Use strongly-typed DTOs for:
+  - Storage records persisted to SQLite
+  - Supabase row types returned from queries
+  - Supabase Edge Function request/response payloads
+- Prefer immutable DTO shapes and pure functions for the Sudoku engine/eligibility rules.
+
+DTO examples (TypeScript):
+
+```ts
+export interface DailyKeyDTO {
+  dateKey: string; // "YYYY-MM-DD" in the user's local timezone
+}
+
+export interface RunResultDTO {
+  runId: string;
+  dateKey: string;
+  elapsedMs: number;
+  assisted: boolean;
+  competitiveEligible: boolean;
+}
+```
+
+## API Type Contracts
+
+- Prefer typed request/response objects for Edge Functions.
+- When practical, validate runtime payloads at boundaries (e.g., Edge Function handlers) to match types.
+
+## Application
+
+Type safety rules apply always for new code. Legacy code should be gradually improved without weakening `tsconfig` strictness.

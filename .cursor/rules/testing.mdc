@@ -1,0 +1,62 @@
+---
+description: Testing rules for Sudoku (TypeScript unit tests + web/mobile E2E)
+globs:
+  - "tests/**"
+  - "**/*.spec.ts"
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.tsx"
+  - "**/e2e/**"
+  - "**/playwright/**"
+  - "**/cypress/**"
+  - "**/cypress.config.*"
+  - "**/playwright.config.*"
+  - "**/jest.config.*"
+  - "**/vitest.config.*"
+  - "supabase/**"
+alwaysApply: false
+---
+
+# Testing Rules
+
+> Applicability: Triggers for TypeScript tests and E2E tooling/config.
+
+## Core principles
+
+- **TDD is the default** for new features: tests first, then implementation.
+- **No real network calls in unit tests**: mock Supabase and any HTTP.
+- **High coverage** is the target for domain/engine logic.
+
+## What must be tested (minimum)
+
+- **Sudoku engine**: generator/solver/validation/difficulty rating (pure TS)
+- **Eligibility rules**: assisted vs unassisted triggers + competitive preset enforcement
+- **Persistence**: serialization/deserialization and autosave/resume policy
+
+## Unit tests
+
+- Prefer fast unit tests for pure logic (engine + eligibility + services).
+- Keep tests deterministic (seed randomness where generation is tested).
+
+## Component/screen tests
+
+- Prefer testing user-visible behavior over implementation details.
+- Avoid testing NativeWind class strings; test semantics/state instead.
+
+## Web E2E
+
+- **Preferred**: Playwright.
+- Tag a small, deterministic smoke subset with `@smoke` (fast, stable).
+
+## Mobile E2E
+
+- **Choose one tool**: Maestro is recommended for simplicity.
+- Keep E2E flows focused on the highest-value paths (start daily, enter digits, complete, eligibility lost banner).
+
+## New feature requirements (guardrails)
+
+For any new feature, include at least:
+- one **happy-path** test
+- one **failure-case** test (validation/error/permission or eligibility loss)
+
+Testing rules apply to all tests. Keep tests high-signal and deterministic.

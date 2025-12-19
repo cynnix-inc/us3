@@ -1,0 +1,84 @@
+---
+description: UI layer: screens/components only, no business logic or IO in render paths
+globs:
+  - "app/**"
+  - "src/screens/**"
+  - "src/components/**"
+  - "components/**"
+  - "**/*.tsx"
+alwaysApply: false
+---
+
+# UI Layer Rules
+
+> Applicability: Triggers for Expo Router routes (`app/**`), screens/components, and TSX UI files.
+
+## Architecture
+
+UI components should delegate to services/hooks and focus on rendering, input handling, and accessibility.
+
+## Constraints
+
+- **Forbid**: Sudoku business rules in UI components (move to domain/services)
+- **Forbid**: Direct SQLite or Supabase calls from render paths
+- **Prefer**: Typed hooks/services for orchestration (`useGame`, `useDaily`, etc.)
+- **Prefer**: Keep UI functions small and focused; split components when they grow
+
+## What counts as business logic (and what does not)
+
+Move to domain/services:
+- Sudoku rule validation, solver/generator logic, difficulty rating
+- Competitive eligibility and assisted/unassisted determination
+- Autosave/resume policy and persistence decisions
+- Sync / leaderboard submission orchestration
+
+Acceptable UI logic:
+- Routing/navigation and screen composition
+- Local ephemeral UI state (modals, focus, pressed state)
+- Mapping user events to service calls (e.g., “place digit”, “toggle notes”)
+- Accessibility: labels, focus management, keyboard handling (web)
+
+## Component organization (keep screens thin)
+
+Split components when:
+- The component grows beyond ~200–300 lines
+- Input logic + rendering + orchestration are mixed
+- A sub-area can be reused or tested in isolation
+
+## Good vs Bad
+
+Bad (business logic + IO in UI):
+
+```tsx
+// BAD: mixing rendering with persistence/network and core rules
+export function GameScreen() {
+  async function onPressSubmit() {
+    // talks to supabase, decides eligibility, writes sqlite in the component
+  }
+
+  return null;
+}
+```
+
+Good (delegate to hooks/services):
+
+```tsx
+export function GameScreen() {
+  const game = useGame();
+
+  return (
+    <GameView
+      board={game.board}
+      onPlaceDigit={(digit) => game.placeDigit(digit)}
+      onUndo={() => game.undo()}
+    />
+  );
+}
+```
+
+## Type Safety
+
+- Prefer explicit prop and callback typing; avoid `any`.
+- UI should not “invent” domain types; import from domain modules where possible.
+
+UI should remain thin and delegate business logic to domain/services.

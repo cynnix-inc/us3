@@ -1,0 +1,43 @@
+---
+description: Storage layer: SQLite persistence and Supabase migrations (no business rules)
+globs:
+  - "src/storage/**"
+  - "src/db/**"
+  - "supabase/migrations/**"
+  - "supabase/seed.sql"
+  - "supabase/**/*.sql"
+alwaysApply: false
+---
+
+# Storage Rules
+
+> Applicability: Triggers for SQLite storage adapters, schema/migration SQL, and Supabase migrations.
+
+## Architecture
+
+Storage encapsulates persistence details and avoids business rules.
+
+## Constraints
+
+- **Max function length**: 60 lines
+- **Forbid**: UI layer logic
+- **Forbid**: Sudoku business rules (move to `services.mdc` / `architecture.mdc` layers)
+- **Prefer**: Storage interfaces + concrete implementations (SQLite, AsyncStorage, etc.)
+- **Require**: Stable serialization formats (versioned when needed)
+
+## SQLite (client, offline-first)
+
+- **Source of truth**: Puzzle state and run history are persisted locally (per PRD offline requirements).
+- **Atomicity**: Save state changes atomically (transaction) when multiple related writes must be consistent.
+- **Performance**: Avoid large JSON blobs when structured tables provide simpler queries/updates.
+
+## Supabase database (server)
+
+- Use migrations for schema changes (keep them small and reviewable).
+- Prefer adding columns/tables over destructive changes in early iterations; avoid breaking changes without a migration plan.
+
+## Schema guidance (general)
+
+- Prefer explicit primary keys (UUIDs for public records; numeric IDs only if clearly justified).
+- Index fields used by leaderboard queries (date key, elapsed time ordering, user id).
+- Store daily identity as a **date key** (e.g., `YYYY-MM-DD`) rather than relying on timestamps for “today”.

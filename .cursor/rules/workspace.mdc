@@ -1,0 +1,91 @@
+---
+description: Workspace-wide rules summary and design code reference - always applied
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Workspace Rules Summary
+
+This workspace uses layered rule files located in `.cursor/rules/`. All rules in this directory are automatically applied based on their configuration.
+
+## Automatic Application
+
+Rules are automatically applied based on their configuration:
+- **Always Apply**: `project.mdc`, `formatting.mdc`, `typesafety.mdc`, `versioning.mdc`, `infra.mdc`, `architecture.mdc`, `workspace.mdc`
+- **Targeted**: Rules matching specific file patterns (UI, domain/services, storage, scripts/edge functions, tests)
+
+## Key Rules Summary
+
+### Stack Versions (CRITICAL - Must Match)
+- Node.js: 20.x LTS
+- Expo SDK: pinned (minor) in `package.json` and upgraded intentionally
+- React / React Native: aligned to Expo SDK (do not bump independently)
+- TypeScript: strict mode enabled
+- Supabase JS client: pinned minor
+- Testing: unit tests for pure TS logic + web E2E via Playwright; mobile E2E via a single chosen tool (see `testing.mdc`)
+
+### Workflow Rules
+- **TDD First**: Specs -> Tests -> Implement -> Review -> Commit (after approval)
+- **Never commit to `dev`/`main`**: Always use `feature/*` or `hotfix/*` branches
+- **Multi-angle review**: Correctness, Completeness, Consistency
+- **Max iterations**: 10 (respect limit)
+
+### Layer Boundaries
+- **UI**: screens/components only; no persistence/network code in render paths
+- **Domain/Services**: business rules and orchestration (e.g., eligibility, autosave policy)
+- **Storage**: SQLite adapters, serialization, migrations; no UI dependencies
+- **Sync/Edge Functions**: server-side validation and submission rules for leaderboards
+
+### Code Quality
+- Prefer SDKs over direct HTTP
+- TypeScript strict mode
+- Prettier + ESLint for JS/TS
+
+### Testing
+- 100% coverage target
+- Mock external calls
+- TDD approach
+
+## Full Rules
+
+See `.cursor/rules/` for complete rule definitions:
+- `README.md` - Rule organization and strategy
+- `QUICK_REFERENCE.md` - Quick lookup guide
+- `RULES_SUMMARY.md` - Detailed categorized rules
+- Individual `.mdc` files for specific domains
+
+## For AI Assistant
+
+**MANDATORY: Rule Verification Required Before Any Changes**
+
+**CLI & Tooling Requirements:**
+- **PowerShell Only**: Use PowerShell syntax for all terminal commands. Do not use Bash or Unix-specific commands.
+- **Git No-Pager**: Always append `--no-pager` to git commands that might trigger a pager (e.g., `git --no-pager log`, `git --no-pager diff`).
+
+Before making ANY changes, planning, or implementing features, you MUST:
+1. **Read all applicable rule files** from `.cursor/rules/` based on the files/context you're working with
+2. **Check rule file globs** to identify which rules apply to your target files
+3. **Read `project.mdc` first** (always applies - `alwaysApply: true`)
+4. **Read targeted rules** matching your file patterns (e.g., `controllers.mdc` for controllers, `services.mdc` for services, `testing.mdc` for tests)
+5. **Create a mental checklist** of applicable rules and verify compliance before proceeding
+6. **Verify rule requirements** are met before marking any task as complete
+
+**This verification step is REQUIRED and must happen BEFORE editing code, writing tests, or planning features.**
+
+When working in this workspace:
+1. **Always check** `.cursor/rules/project.mdc` (always applies)
+2. **Check targeted rules** based on files being edited (match globs to file paths)
+3. **Verify stack versions** match requirements
+4. **Follow TDD workflow** for features
+5. **Respect git safety rules** (never commit to dev/main)
+6. **Review changes** from multiple angles before completion
+7. **Cross-reference all changes** against applicable rules before finalizing
+
+## Design Code Reference
+
+**Product + UX Source of Truth**: Use these docs as the authoritative reference for v1 behavior and screen inventory:
+- `docs/sudoku-prd-v1.md`
+- `docs/sudoku-screens-and-menus-v1.md`
+- `docs/sudoku-settings-v1.md`
+- `docs/sudoku-master-stack-v1.md`

@@ -1,0 +1,63 @@
+---
+description: Sudoku design system rules (tokens, NativeWind usage, accessibility)
+globs:
+  - "app/**"
+  - "src/theme/**"
+  - "src/components/**"
+  - "components/**"
+  - "**/*.tsx"
+  - "**/tailwind.config.*"
+alwaysApply: false
+---
+
+# Sudoku Design System Rules
+
+This document defines how we keep UI consistent across iOS/Android/Web for Sudoku v1.
+
+## Sources of truth
+
+- Product requirements: `docs/sudoku-prd-v1.md`
+- Screens/menus inventory: `docs/sudoku-screens-and-menus-v1.md`
+- Settings inventory: `docs/sudoku-settings-v1.md`
+- UI/UX (Figma Make): `https://www.figma.com/make/BXuIw8tGSZMaJcMeF439WT/Dark-Themed-Sudoku-UI-UX?t=Cn2IvBm76IroVvni-1`
+
+### Policy: missing design elements in Figma
+
+- If a required v1 feature/screen exists in PRD/docs but is missing in Figma, **flag the gap** and treat it as a product/design decision.
+- Do not invent UI/UX beyond PRD/docs without explicit approval; keep any stopgap UI minimal and clearly temporary.
+
+## 1) Tokens
+
+### Location
+
+- Put design tokens in a small TypeScript module (recommended path): `src/theme/tokens.ts`.
+- Tokens should cover:
+  - colors (including highlight and conflict states)
+  - typography scale
+  - spacing/radius
+
+### Rules
+
+- Prefer semantic tokens (e.g., `colors.grid.selectedBg`) over raw hex usage.
+- Avoid ad-hoc “one-off” colors in components; add/rename tokens instead.
+
+## 2) Styling approach (NativeWind)
+
+- Prefer NativeWind `className` for layout and spacing.
+- Prefer tokens for values that should remain consistent across the app (colors/typography/radii).
+- If a platform-specific styling workaround is needed, isolate it behind a small helper instead of scattering conditionals.
+
+## 3) Components
+
+- Shared primitives should live in `src/components/**` (or `components/**`) and stay UI-only.
+- Domain logic (Sudoku rules, eligibility, autosave) must not live in components (see `architecture.mdc` and `services.mdc`).
+
+## 4) Accessibility (required)
+
+- Keyboard support on web is a first-class requirement for the Sudoku grid.
+- Never rely on color alone to convey state (selection, conflicts, same-number highlighting).
+- All interactive elements must have accessible labels.
+
+## 5) Deviations
+
+When a UI deviation is required (platform limitation, performance constraint), document it briefly in the component (comment) and keep the token/component API consistent.

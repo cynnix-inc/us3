@@ -1,0 +1,92 @@
+---
+description: Frontend rules for Expo (React Native + RN Web) + TypeScript + NativeWind
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "app/**"
+  - "src/**"
+  - "components/**"
+  - "**/tsconfig.json"
+  - "**/tailwind.config.*"
+  - "**/metro.config.*"
+  - "**/babel.config.*"
+  - "**/app.json"
+  - "**/app.config.*"
+  - "**/eas.json"
+alwaysApply: false
+---
+
+# Frontend Rules
+
+> Applicability: Triggers for Expo Router routes (`app/**`), TS/TSX components, and RN tooling configs.
+
+## TypeScript
+
+- Enable TypeScript strict mode
+- Require explicit types for function parameters and return values
+- Use type aliases for complex object shapes
+- Avoid `any` type except for escape hatches (with justification)
+
+## React / React Native component conventions
+
+- Prefer function components + hooks.
+- Prefer co-locating UI with its tests.
+- Avoid side-effects during render; use `useEffect` and ensure dependencies are correct.
+- Keep state updates predictable and immutable.
+
+## Expo Router
+
+- Split components when:
+  - A screen grows beyond ~200–300 lines
+  - A sub-area can be reused or tested in isolation
+  - Multiple responsibilities emerge (rendering vs orchestration vs persistence)
+- Keep route files in `app/**` thin; move logic to `src/**`.
+
+## State management
+
+- Prefer a small number of predictable stores (e.g., Zustand) for app/game state.
+- Prefer TanStack Query for server state (Supabase queries) when applicable.
+- Keep stores thin; move complex rules to domain/services.
+
+## Styling (NativeWind)
+
+- Prefer `className` with NativeWind for consistent styling across iOS/Android/Web.
+- Keep a token layer for colors/spacing/typography (see `design_system_rules.mdc`).
+- Avoid platform-specific hacks; if required, isolate them behind small helpers.
+
+## Accessibility & input
+
+- Web keyboard support is a first-class requirement for the Sudoku grid (PRD).
+- Ensure focus management and ARIA/role semantics work on web.
+- Never rely on color alone to convey state (selection, conflicts, highlights).
+
+## Code Quality
+
+- **Max component length**: 400 lines
+- **Max function length**: 60 lines
+- **TODO comments**: Warn on TODO comments
+- **Console.log**: Disallow in production code
+
+### Good vs Bad
+
+Good:
+
+```tsx
+type Props = { id: string; onSave: (payload: { id: string }) => void };
+
+export function SaveButton({ id, onSave }: Props) {
+  return <Pressable onPress={() => onSave({ id })} />;
+}
+```
+
+Bad:
+
+```tsx
+// no types, mixed responsibilities, side-effects in render
+export function SaveButton(props: any) {
+  // ...
+  return null;
+}
+```
+
+Frontend rules apply to Expo/React Native + TypeScript code. Always keep strict TypeScript enabled.

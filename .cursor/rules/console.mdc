@@ -1,0 +1,55 @@
+---
+description: Scripts and Supabase Edge Functions (server-side) rules
+globs:
+  - "scripts/**"
+  - "supabase/functions/**"
+  - "supabase/migrations/**"
+alwaysApply: false
+---
+
+# Scripts / Edge Function Rules
+
+> Applicability: Triggers for repository scripts and Supabase Edge Functions.
+
+## Architecture
+
+Scripts and Edge Functions should delegate to domain/services and remain thin. No UI concerns in server-side code.
+
+## Constraints
+
+- **Max function length**: 80 lines
+- **Prefer**: Domain/service invocation
+- **Inputs**: Validate all inputs at runtime (never trust clients)
+- **Outputs**: Return stable response + error shapes (versioned if public)
+- **Security**: Never log secrets; redact tokens and PII
+- **Time**: Use timeouts and retries when calling external systems
+
+## Edge Function structure
+
+Functions should be simple wrappers that:
+1. Parse input
+2. Validate payload
+3. Invoke appropriate service/domain logic
+4. Format and return a stable response
+
+## Example
+
+```ts
+export type SubmitDailyRequest = {
+  dateKey: string; // "YYYY-MM-DD"
+  elapsedMs: number;
+  assisted: boolean;
+  competitiveEligible: boolean;
+};
+
+export type SubmitDailyResponse =
+  | { ok: true }
+  | { ok: false; error: { code: string; message: string } };
+
+export async function submitDaily(req: SubmitDailyRequest): Promise<SubmitDailyResponse> {
+  // validate inputs, then delegate to domain/service logic
+  return { ok: true };
+}
+```
+
+Scripts/Edge Functions should remain thin and delegate to domain/services.

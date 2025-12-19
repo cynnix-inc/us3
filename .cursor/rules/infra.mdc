@@ -1,0 +1,60 @@
+---
+description: Infrastructure rules for CI/CD, Expo builds, and Supabase workflows
+globs:
+  - ".github/**/*.yml"
+  - ".github/**/*.yaml"
+  - "scripts/**/*.ps1"
+  - "eas.json"
+  - "app.json"
+  - "app.config.*"
+  - "supabase/**"
+alwaysApply: true
+---
+
+# Infrastructure Rules
+
+Infrastructure files must be reproducible and pinned. Validate CI configuration and environment-specific workflows in reviews.
+
+## GitHub Actions
+
+- **Pin action versions**: Required (use tagged major versions, not commit SHAs)
+- **Cache dependencies**: package manager cache
+- **Parallel jobs**: Enable where possible
+- **Fail fast**: Stop on first error
+- **Stages**: lint → test → build (in that order)
+- **Artifacts**: Upload coverage reports and web build artifacts where applicable
+
+## Node / Toolchain
+
+- **Node**: Must match `.nvmrc` (see `versioning.mdc`)
+- **Single source of truth**: One package manager per repo. Do not mix npm/pnpm/yarn in CI.
+- **Deterministic installs**:
+  - If `package-lock.json` exists, CI should use `npm ci`.
+  - If `pnpm-lock.yaml` exists, CI should use `pnpm install --frozen-lockfile`.
+
+## Expo builds
+
+- Prefer **EAS Build** for mobile distribution when configured (`eas.json`).
+- Keep build-time configuration in `app.config.ts` / `app.json` and environment variables; do not hardcode secrets.
+- For web builds (if shipped): ensure the build is reproducible (same Node version, pinned deps).
+
+## Supabase (Edge Functions / migrations)
+
+- **Secrets**: Manage secrets via Supabase secrets; never commit them.
+- **Edge Functions**:
+  - Validate inputs at runtime and return stable error shapes.
+  - Never log secrets or raw tokens.
+- **Database migrations**:
+  - Keep migrations small and reversible where possible.
+  - Prefer migration-driven schema changes; avoid manual dashboard edits without capturing them in migrations.
+
+## Version pinning
+
+- **Dependencies**: pinned minor versions; intentional upgrades only.
+- **Node**: pinned via `.nvmrc` + CI validation.
+
+## General Rules
+
+- **TODO comments**: Not warned (infra files may have TODOs)
+- **Pinned versions**: Required
+- **No secrets in repo**: Never commit keys/tokens. Use `.env.example` templates only.
