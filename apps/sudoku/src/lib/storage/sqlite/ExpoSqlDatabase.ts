@@ -4,7 +4,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import type { SqlDatabase, SqlParam, SqlStatement } from './SqlDatabase';
 
 class ExpoStatement implements SqlStatement {
-  private rows: Array<Record<string, unknown>> = [];
+  private rows: Record<string, unknown>[] = [];
   private cursor = -1;
 
   constructor(

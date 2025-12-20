@@ -21,12 +21,12 @@ type PuzzleStateRow = {
 
 class FakeStatement implements SqlStatement {
   private cursor = -1;
-  private rows: Array<Record<string, unknown>> = [];
+  private rows: Record<string, unknown>[] = [];
 
   constructor(
     private readonly getRows:
-      | Array<Record<string, unknown>>
-      | ((params: SqlParam[]) => Array<Record<string, unknown>>),
+      | Record<string, unknown>[]
+      | ((params: SqlParam[]) => Record<string, unknown>[]),
   ) {
     if (Array.isArray(getRows)) this.rows = getRows;
   }
@@ -47,7 +47,9 @@ class FakeStatement implements SqlStatement {
     return this.rows[this.cursor] ?? {};
   }
 
-  free() {}
+  free() {
+    // No-op: fake statement doesn't hold native resources.
+  }
 }
 
 class FakeDb implements SqlDatabase {
@@ -103,7 +105,7 @@ class FakeDb implements SqlDatabase {
 
     if (/^BEGIN$/i.test(s) || /^COMMIT$/i.test(s) || /^ROLLBACK$/i.test(s)) return;
 
-    const setVersion = s.match(/^PRAGMA\s+user_version\s*=\s*(\d+);?$/i);
+    const setVersion = /^PRAGMA\s+user_version\s*=\s*(\d+);?$/i.exec(s);
     if (setVersion) {
       this.userVersion = Number(setVersion[1]);
       return;
@@ -176,7 +178,6 @@ class FakeDb implements SqlDatabase {
         status,
         updated_at_ms,
       });
-      return;
     }
   }
 }
