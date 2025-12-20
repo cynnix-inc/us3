@@ -19,7 +19,7 @@ export type PuzzleState = {
   status: PuzzleStatus;
 };
 
-const MIGRATIONS: Array<{ version: number; sql: string }> = [
+const MIGRATIONS: { version: number; sql: string }[] = [
   {
     version: 1,
     sql: `

@@ -1,4 +1,5 @@
 import { createSupabaseClient, getSupabaseEnv } from '../client';
+import { createClient } from '@supabase/supabase-js';
 
 jest.mock('@supabase/supabase-js', () => {
   return {
@@ -25,7 +26,7 @@ describe('supabase client', () => {
 
     expect(client).toEqual({ mock: true });
 
-    const { createClient } = require('@supabase/supabase-js');
-    expect(createClient).toHaveBeenCalledWith(env.url, env.anonKey, expect.any(Object));
+    const mockedCreateClient = createClient as jest.MockedFunction<typeof createClient>;
+    expect(mockedCreateClient).toHaveBeenCalledWith(env.url, env.anonKey, expect.any(Object));
   });
 });
